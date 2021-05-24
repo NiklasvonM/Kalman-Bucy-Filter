@@ -2,6 +2,9 @@ library(shiny)
 library(data.table)
 library(ggplot2)
 library(plotly)
+library(Sim.DiffProc)
+
+options(scipen = 99)
 
 # dX_t = 0
 # dZ_t = X_t dt + m dV_t
@@ -17,13 +20,12 @@ ex629 <- function(T1 = 1, sigma = 1, m = 1, N = 1000) {
   
   X_hat_int <- X_hat * times
   
-  return(list(t = times, X = X, X_int = X_int, H = H, Z = Z, X_hat = X_hat, X_hat_int = X_hat_int))
+  return(list(X0 = X0, t = times, X = X, X_int = X_int, H = H, Z = Z, X_hat = X_hat, X_hat_int = X_hat_int))
 }
 
 getPlot <- function(...) {
   processes <- ex629(...)
   dt <- data.table(
-    i = i,
     t = processes$t,
     X = processes$X,
     `X integriert` = processes$X_int,
@@ -35,7 +37,7 @@ getPlot <- function(...) {
   
   dtPlot <- melt.data.table(
     dt,
-    id.vars = c("i", "t"),
+    id.vars = c("t"),
     measure.vars = c(
       "X integriert",
       #"H",
@@ -48,6 +50,7 @@ getPlot <- function(...) {
   )
   
   p <- ggplot(dtPlot, aes(x = t, y = Wert, color = Prozess)) +
-    geom_line()
+    geom_line() +
+    ggtitle(paste0("X0 = ", round(processes$X0, 2)))
   ggplotly(p)
 }
