@@ -18,6 +18,13 @@ shinyUI(fluidPage(
     # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
+            selectInput("example",
+                        "Beispiel:",
+                        choices = c(
+                            "noisy observations of a constant process",
+                            "noisy observations of a Brownian motion"
+                        ),
+                        selected = "noisy observations of a constant process"),
             sliderInput("seed",
                         "Seed:",
                         min = 1,
@@ -51,7 +58,10 @@ shinyUI(fluidPage(
 
         # Show a plot of the generated distribution
         mainPanel(
-            plotlyOutput("distPlot")
+            plotlyOutput("distPlot"),
+            uiOutput(
+                "formula"
+            )
         )
     )
 ))
