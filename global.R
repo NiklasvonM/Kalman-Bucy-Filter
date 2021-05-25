@@ -23,7 +23,21 @@ ex629 <- function(T1 = 1, sigma = 1, m = 1, N = 1000) {
     #cumsum(X_hat) / N
     X_hat * times
   
-  return(list(X0 = X0, t = times, X = X, X_int = X_int, H = H, Z = Z, X_hat = X_hat, X_hat_int = X_hat_int))
+  S_X_hat <- mean((X_hat_int - X_int)^2)
+  S_Z <- mean((Z - X_int)^2)
+  
+  return(list(
+    X0 = X0,
+    t = times,
+    X = X,
+    X_int = X_int,
+    H = H,
+    Z = Z,
+    X_hat = X_hat,
+    X_hat_int = X_hat_int,
+    S_X_hat = S_X_hat,
+    S_Z = S_Z
+  ))
 }
 
 # dX_t = cdU_t
@@ -77,7 +91,11 @@ getPlot <- function(example = "noisy observations of a constant process", ...) {
       variable.factor = FALSE
     )
     
-    plotTitle <- ggtitle(paste0("X0 = ", round(processes$X0, 2)))
+    plotTitle <- ggtitle(paste0(
+      "X0 = ", round(processes$X0, 2), "; ",
+      "MSE Z: ", round(processes$S_Z, 2), ", ",
+      "MSE KBF: ", round(processes$S_X_hat, 2)
+    ))
     
   } else if (example == "noisy observations of a Brownian motion") {
     processes <- ex6210(...)
@@ -111,5 +129,6 @@ getPlot <- function(example = "noisy observations of a constant process", ...) {
   p <- ggplot(dtPlot, aes(x = t, y = Wert, color = Prozess)) +
     geom_line() +
     plotTitle
-  ggplotly(p)
+  p <- ggplotly(p)
+  p
 }
