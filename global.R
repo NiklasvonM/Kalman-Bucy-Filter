@@ -9,22 +9,22 @@ options(scipen = 99)
 # dX_t = 0
 # dZ_t = X_t dt + m dV_t
 # "noisy observations of constant process"
-ex629 <- function(T1 = 1, sigma = 1, m = 1, N = 1000) {
+ex629 <- function(T1 = 1, sigma = 1, m = 1, N = 100) {
   V <- BM(N = 10 * N * T1, t0 = 0, T = T1)
   X0 <- rnorm(n = 1, mean = 0, sd = sigma^2)
   times <- seq(0, T1, length.out = N * T1)
   X <- X0
   X_int <- X0 * times
   Z <- times * X0 + m * V[10 * 1:(N * T1)]
-  H <- c(0, diff(Z))
+  H <- c(0, diff(Z)) * N
   X_hat <- sigma^2 / (m^2 + sigma^2 * times) * Z
   
   X_hat_int <- 
     #cumsum(X_hat) / N
     X_hat * times
   
-  S_X_hat <- mean((X_hat_int - X_int)^2)
-  S_Z <- mean((Z - X_int)^2)
+  #S_X_hat <- mean((X_hat_int - X_int)^2)
+  #S_Z <- mean((Z - X_int)^2)
   
   return(list(
     X0 = X0,
@@ -34,16 +34,16 @@ ex629 <- function(T1 = 1, sigma = 1, m = 1, N = 1000) {
     H = H,
     Z = Z,
     X_hat = X_hat,
-    X_hat_int = X_hat_int,
-    S_X_hat = S_X_hat,
-    S_Z = S_Z
+    X_hat_int = X_hat_int#,
+    #S_X_hat = S_X_hat,
+    #S_Z = S_Z
   ))
 }
 
 # dX_t = cdU_t
 # dZ_t = X_tdt + mdV_t
 # noisy observations of a Brownian motion
-ex6210 <- function(T1 = 1, N = 1000,
+ex6210 <- function(T1 = 1, N = 100,
                    # unused arguments:
                    m = NULL, sigma = NULL, c = NULL
                    ) {
@@ -53,9 +53,9 @@ ex6210 <- function(T1 = 1, N = 1000,
   
   X <- U[10 * 1:(N * T1)]
   Z <- cumsum(X) / N + V[10 * 1:(N * T1)]
-  H <- c(0, diff(Z))
+  H <- c(0, diff(Z)) * N
   
-  X_hat <- 1 / cosh(times) * cumsum(sinh(times) * H)
+  X_hat <- 1 / cosh(times) * cumsum(sinh(times) * H / N)
   
   return(list(t = times, X = X, Z = Z, H = H, X_hat = X_hat))
 }
@@ -68,23 +68,23 @@ getPlot <- function(example = "noisy observations of a constant process", ...) {
     dt <- data.table(
       t = processes$t,
       X = processes$X,
-      `X integriert` = processes$X_int,
+      `X * t` = processes$X_int,
       Z = processes$Z,
       H = processes$H,
       `Kalman Bucy Filter` = processes$X_hat,
-      `Kalman Bucy Filter integriert` = processes$X_hat_int
+      `Kalman Bucy Filter * t` = processes$X_hat_int
     )
     
     dtPlot <- melt.data.table(
       dt,
       id.vars = c("t"),
       measure.vars = c(
-        "X integriert",
-        #"X",
-        #"H",
+        #"X * t",
+        "X",
+        "H",
         "Z",
-        "Kalman Bucy Filter integriert"
-        #"Kalman Bucy Filter"
+        #"Kalman Bucy Filter * t",
+        "Kalman Bucy Filter"
       ),
       variable.name = "Prozess",
       value.name = "Wert",
@@ -92,10 +92,15 @@ getPlot <- function(example = "noisy observations of a constant process", ...) {
     )
     
     plotTitle <- ggtitle(paste0(
-      "X0 = ", round(processes$X0, 2), "; ",
-      "MSE Z: ", round(processes$S_Z, 2), ", ",
-      "MSE KBF: ", round(processes$S_X_hat, 2)
+      # "X0 = ", round(processes$X0, 2), "; ",
+      # "MSE Z: ", round(processes$S_Z, 2), ", ",
+      # "MSE KBF: ", round(processes$S_X_hat, 2)
     ))
+    
+    overrideLegend <-
+      guides(color = guide_legend(override.aes = list(linetype = c(NA, 1,   1, 1),
+                                                      shape    = c(19, NA, NA, NA))))
+    
     
   } else if (example == "noisy observations of a Brownian motion") {
     processes <- ex6210(...)
@@ -127,8 +132,9 @@ getPlot <- function(example = "noisy observations of a constant process", ...) {
 
   
   p <- ggplot(dtPlot, aes(x = t, y = Wert, color = Prozess)) +
-    geom_line() +
-    plotTitle
+    geom_point(data = dtPlot[Prozess == "H"]) +
+    geom_line(data = dtPlot[Prozess != "H"])
+    #plotTitle
   p <- ggplotly(p)
   p
 }
