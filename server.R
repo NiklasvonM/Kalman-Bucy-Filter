@@ -20,6 +20,7 @@ shinyServer(function(input, output) {
         # draw the histogram with the specified number of bins
         getPlot(
             example = input$example,
+            showObservations = input$showObservations,
             m = input$m,
             sigma = input$sigma,
             T1 = input$T1

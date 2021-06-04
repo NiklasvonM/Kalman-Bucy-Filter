@@ -22,7 +22,8 @@ shinyUI(fluidPage(
                         "Beispiel:",
                         choices = c(
                             "noisy observations of a constant process",
-                            "noisy observations of a Brownian motion"
+                            "noisy observations of a Brownian motion",
+                            "wrong model"
                         ),
                         selected = "noisy observations of a constant process"),
             sliderInput("seed",
@@ -53,6 +54,11 @@ shinyUI(fluidPage(
                 max = 100,
                 step = 1,
                 value = 5
+            ),
+            checkboxInput(
+                "showObservations",
+                "Show observations",
+                value = TRUE
             )
         ),
 
