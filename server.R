@@ -38,11 +38,18 @@ shinyServer(function(input, output) {
             )
         else if (input$example == "noisy observations of a Brownian motion")
             withMathJax(
-                    "$$dX_t=dU_t, X_0 = 0 $$
+            "$$dX_t=dU_t, X_0 = 0 $$
              $$dZ_t=X_tdt + dV_t$$
              $$Z_t = \\int_0^t H_s ds$$
              $$\\hat{X}_t = \\frac{1}{\\cosh(t)} \\int_0^t \\sinh(s) H_s ds$$
              $$S(t) = \\tanh{t}$$"
+            )
+        else if (input$example == "wrong model")
+            withMathJax(
+            "$$dX_t=dU_t, X_0 = 0 $$
+             $$dZ_t=X_tdt + dV_t$$
+             $$Z_t = \\int_0^t H_s ds$$
+             $$\\hat{X}_t = \\frac{1}{1+t} Z_t ds$$"
             )
     })
 
