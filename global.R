@@ -81,6 +81,29 @@ exWrongModel <- function(T1 = 1, N = 100,
   return(list(t = times, X = X, Z = Z, H = H, X_hat = X_hat))
 }
 
+ex6212 <- function(T1 = 1, N = 100,
+                   m = 1, sigma = 1
+                   #unused arguments:
+                   
+) {
+  r <- sigma^2/(2*m^2)
+  V <- BM(N = 10 * N * T1, t0 = 0, T = T1)
+  times <- seq(0, T1, length.out = N * T1)
+  
+  X0 <- rnorm(1, 0, sigma^2)
+  X <- exp(r * times) * X0 - X0
+  Z <- X0 / r * exp(r * times) + m * V[10 * 1:(N * T1)]
+  H <- c(0, diff(Z)) * N
+  X_hat <- exp(-r * times) * cumsum(2 * r * H)
+  return(list(
+    t = times,
+    X = X,
+    Z = Z,
+    H = H,
+    X_hat = X_hat
+  ))
+}
+
 
 getPlot <- function(example = "noisy observations of a constant process", showObservations = TRUE, ...) {
   
@@ -107,87 +130,35 @@ getPlot <- function(example = "noisy observations of a constant process", showOb
   
   if (example == "noisy observations of a constant process") {
     processes <- ex629(...)
-    
-    dt <- data.table(
-      t = processes$t,
-      X = processes$X,
-      `X * t` = processes$X_int,
-      Z = processes$Z,
-      H = processes$H,
-      `Kalman Bucy Filter` = processes$X_hat,
-      `Kalman Bucy Filter * t` = processes$X_hat_int
-    )
-    
-    dtPlot <- melt.data.table(
-      dt,
-      id.vars = c("t"),
-      measure.vars = measureVars,
-      variable.name = "Prozess",
-      value.name = "Wert",
-      variable.factor = FALSE
-    )
-    
-    plotTitle <- ggtitle(paste0(
-      # "X0 = ", round(processes$X0, 2), "; ",
-      # "MSE Z: ", round(processes$S_Z, 2), ", ",
-      # "MSE KBF: ", round(processes$S_X_hat, 2)
-    ))
-    
-    overrideLegend <-
-      guides(color = guide_legend(override.aes = list(linetype = lineType,
-                                                      shape    = shape)))
-    
-    
   } else if (example == "noisy observations of a Brownian motion") {
     processes <- ex6210(...)
-    
-    dt <- data.table(
-      t = processes$t,
-      X = processes$X,
-      H = processes$H,
-      Z = processes$Z,
-      `Kalman Bucy Filter` = processes$X_hat
-    )
-    
-    dtPlot <- melt.data.table(
-      dt,
-      id.vars = c("t"),
-      measure.vars = measureVars,
-      variable.name = "Prozess",
-      value.name = "Wert",
-      variable.factor = FALSE
-    )
-    
-    plotTitle <- ggtitle("")
   } else if (example == "wrong model") {
     processes <- exWrongModel(...)
-    
-    dt <- data.table(
-      t = processes$t,
-      X = processes$X,
-      H = processes$H,
-      Z = processes$Z,
-      `Kalman Bucy Filter` = processes$X_hat
-    )
-    
-    dtPlot <- melt.data.table(
-      dt,
-      id.vars = c("t"),
-      measure.vars = measureVars,
-      variable.name = "Prozess",
-      value.name = "Wert",
-      variable.factor = FALSE
-    )
-    
-    plotTitle <- ggtitle("")
+  } else if (example == "noisy observations of population growth") {
+    processes <- ex6212(...)
   }
-
+  
+  dt <- data.table(
+    t = processes$t,
+    X = processes$X,
+    Z = processes$Z,
+    H = processes$H,
+    `Kalman Bucy Filter` = processes$X_hat
+  )
+  
+  dtPlot <- melt.data.table(
+    dt,
+    id.vars = c("t"),
+    measure.vars = measureVars,
+    variable.name = "Prozess",
+    value.name = "Wert",
+    variable.factor = FALSE
+  )
   
   p <- ggplot(dtPlot, aes(x = t, y = Wert, color = Prozess)) +
     geom_point(data = dtPlot[Prozess == "H"]) +
     geom_line(data = dtPlot[Prozess != "H"]) +
     scale_color_manual(values = colorPalette)
-    #plotTitle
   p <- ggplotly(p)
   p
 }

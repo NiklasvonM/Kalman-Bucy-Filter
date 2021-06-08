@@ -29,28 +29,34 @@ shinyServer(function(input, output) {
     })
     
     output$formula <- renderUI({
-        if(input$example == "noisy observations of a constant process")
-            withMathJax(
-            "$$dX_t=0, X_0 \\sim N(0, \\sigma^2)$$
-             $$dZ_t=X_tdt + mdV_t, Z_0 = 0$$
-             $$\\hat{X}_t = \\frac{\\sigma^2}{m^2+\\sigma^2 t} Z_t$$
-             $$S(t) = \\frac{\\sigma^2 m^2}{m^2 + \\sigma^2 t}$$"
+        switch(
+            input$example,
+            "noisy observations of a constant process" = withMathJax(
+               "$$dX_t=0, X_0 \\sim N(0, \\sigma^2)$$
+                $$dZ_t=X_tdt + mdV_t, Z_0 = 0$$
+                $$\\hat{X}_t = \\frac{\\sigma^2}{m^2+\\sigma^2 t} Z_t$$
+                $$S(t) = \\frac{\\sigma^2 m^2}{m^2 + \\sigma^2 t}$$"
+            ),
+            "noisy observations of a Brownian motion" = withMathJax(
+                "$$dX_t=dU_t, X_0 = 0 $$
+                $$dZ_t=X_tdt + dV_t$$
+                $$Z_t = \\int_0^t H_s ds$$
+                $$\\hat{X}_t = \\frac{1}{\\cosh(t)} \\int_0^t \\sinh(s) H_s ds$$
+                $$S(t) = \\tanh{t}$$"
+            ),
+            "wrong model" = withMathJax(
+               "$$dX_t=dU_t, X_0 = 0 $$
+                $$dZ_t=X_tdt + dV_t$$
+                $$Z_t = \\int_0^t H_s ds$$
+                $$\\hat{X}_t = \\frac{1}{1+t} Z_t ds$$"
+            ),
+            "noisy observations of population growth" = withMathJax(
+                "$$r = \\frac{\\sigma^2}{2 m^2}$$
+                $$X_t = \\exp \\left( rt \\right) X_0, X_0 \\sim N(0, \\sigma^2)$$
+                $$Z_t = X_0 \\frac{1}{r} \\exp(rt) + m dV_t$$
+                $$\\hat{X}_t = \\exp(-rt) \\int\\limits_0^t 2r \\exp(rs)H_sds$$"
             )
-        else if (input$example == "noisy observations of a Brownian motion")
-            withMathJax(
-            "$$dX_t=dU_t, X_0 = 0 $$
-             $$dZ_t=X_tdt + dV_t$$
-             $$Z_t = \\int_0^t H_s ds$$
-             $$\\hat{X}_t = \\frac{1}{\\cosh(t)} \\int_0^t \\sinh(s) H_s ds$$
-             $$S(t) = \\tanh{t}$$"
-            )
-        else if (input$example == "wrong model")
-            withMathJax(
-            "$$dX_t=dU_t, X_0 = 0 $$
-             $$dZ_t=X_tdt + dV_t$$
-             $$Z_t = \\int_0^t H_s ds$$
-             $$\\hat{X}_t = \\frac{1}{1+t} Z_t ds$$"
-            )
+        )
     })
 
 })
