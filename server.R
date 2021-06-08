@@ -51,10 +51,11 @@ shinyServer(function(input, output) {
                 $$\\hat{X}_t = \\frac{1}{1+t} Z_t ds$$"
             ),
             "noisy observations of population growth" = withMathJax(
-                "$$r = \\frac{\\sigma^2}{2 m^2}$$
-                $$X_t = \\exp \\left( rt \\right) X_0, X_0 \\sim N(0, \\sigma^2)$$
-                $$Z_t = X_0 \\frac{1}{r} \\exp(rt) + m dV_t$$
-                $$\\hat{X}_t = \\exp(-rt) \\int\\limits_0^t 2r \\exp(rs)H_sds$$"
+               "$$X_t = \\exp \\left( rt \\right) X_0, X_0 \\sim N(\\mu, \\sigma^2)$$
+                $$Z_t = X_0 \\left( \\frac{1}{r} \\exp(rt) - 1 \\right) + m dV_t$$
+                $$\\hat{X}_t = \\exp(-rt) \\left( \\int\\limits_0^t 2r \\exp(rs)H_sds + \\mu \\right)$$
+                $$S(t) = \\sigma^2$$
+                $$\\mu = 1, \\ r = \\frac{\\sigma^2}{2 m^2}$$"
             )
         )
     })

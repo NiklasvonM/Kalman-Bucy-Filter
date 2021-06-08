@@ -82,7 +82,7 @@ exWrongModel <- function(T1 = 1, N = 100,
 }
 
 ex6212 <- function(T1 = 1, N = 100,
-                   m = 1, sigma = 1
+                   m = 1, mu = 1, sigma = 1
                    #unused arguments:
                    
 ) {
@@ -90,11 +90,11 @@ ex6212 <- function(T1 = 1, N = 100,
   V <- BM(N = 10 * N * T1, t0 = 0, T = T1)
   times <- seq(0, T1, length.out = N * T1)
   
-  X0 <- rnorm(1, 0, sigma^2)
-  X <- exp(r * times) * X0 - X0
-  Z <- X0 / r * exp(r * times) + m * V[10 * 1:(N * T1)]
+  X0 <- rnorm(1, mu, sigma^2)
+  X <- exp(r * times) * X0
+  Z <- (exp(r * times) - 1) / r * X0 + m * V[10 * 1:(N * T1)] #cumsum(X) / N / r + m * V[10 * 1:(N * T1)]
   H <- c(0, diff(Z)) * N
-  X_hat <- exp(-r * times) * cumsum(2 * r * H)
+  X_hat <- exp(-r * times) * (cumsum(2 * r * exp(r * times) * H) / N + mu)
   return(list(
     t = times,
     X = X,
