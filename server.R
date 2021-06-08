@@ -44,17 +44,17 @@ shinyServer(function(input, output) {
                 $$\\hat{X}_t = \\frac{1}{\\cosh(t)} \\int_0^t \\sinh(s) H_s ds$$
                 $$S(t) = \\tanh{t}$$"
             ),
-            "wrong model" = withMathJax(
-               "$$dX_t=dU_t, X_0 = 0 $$
-                $$dZ_t=X_tdt + dV_t$$
-                $$Z_t = \\int_0^t H_s ds$$
-                $$\\hat{X}_t = \\frac{1}{1+t} Z_t ds$$"
-            ),
             "noisy observations of population growth" = withMathJax(
                "$$X_t = \\exp \\left( rt \\right) X_0, X_0 \\sim N(\\mu, \\sigma^2)$$
                 $$Z_t = X_0 \\left( \\frac{1}{r} \\exp(rt) - 1 \\right) + m dV_t$$
                 $$\\hat{X}_t = \\exp(-rt) \\left( \\int\\limits_0^t 2r \\exp(rs)H_sds + \\mu \\right)$$
                 $$S(t) = \\sigma^2$$
+                $$\\mu = 1, \\ r = \\frac{\\sigma^2}{2 m^2}$$"
+            ),
+            "constant model for exponential growth" = withMathJax(
+               "$$X_t = \\exp \\left( rt \\right) X_0, X_0 \\sim N(\\mu, \\sigma^2)$$
+                $$Z_t = X_0 \\left( \\frac{1}{r} \\exp(rt) - 1 \\right) + m dV_t$$
+                $$\\hat{X}_t = \\frac{1}{1+t} Z_t ds$$
                 $$\\mu = 1, \\ r = \\frac{\\sigma^2}{2 m^2}$$"
             )
         )

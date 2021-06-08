@@ -23,8 +23,8 @@ shinyUI(fluidPage(
                         choices = c(
                             "noisy observations of a constant process",
                             "noisy observations of a Brownian motion",
-                            "wrong model",
-                            "noisy observations of population growth"
+                            "noisy observations of population growth",
+                            "constant model for exponential growth"
                         ),
                         selected = "noisy observations of a constant process"),
             sliderInput("seed",

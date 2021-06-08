@@ -61,19 +61,17 @@ ex6210 <- function(T1 = 1, N = 100,
 }
 
 
-# Using the Kalman-Bucy Filter for of a constant process on a Brownian motion
-# dX_t = cdU_t
-# dZ_t = X_tdt + mdV_t
+# Using the Kalman-Bucy Filter for of a constant process on exponential growth
 exWrongModel <- function(T1 = 1, N = 100,
-                   # unused arguments:
-                   m = NULL, sigma = NULL, c = NULL
+                   m = 1, mu = 1, sigma = 1
 ) {
-  U <- BM(N = 10 * N * T1, t0 = 0, T = T1)
+  r <- sigma^2/(2*m^2)
   V <- BM(N = 10 * N * T1, t0 = 0, T = T1)
   times <- seq(0, T1, length.out = N * T1)
   
-  X <- U[10 * 1:(N * T1)]
-  Z <- cumsum(X) / N + V[10 * 1:(N * T1)]
+  X0 <- rnorm(1, mu, sigma^2)
+  X <- exp(r * times) * X0
+  Z <- (exp(r * times) - 1) / r * X0 + m * V[10 * 1:(N * T1)]
   H <- c(0, diff(Z)) * N
   
   X_hat <- 1 / (1 + times) * Z
@@ -83,7 +81,6 @@ exWrongModel <- function(T1 = 1, N = 100,
 
 ex6212 <- function(T1 = 1, N = 100,
                    m = 1, mu = 1, sigma = 1
-                   #unused arguments:
                    
 ) {
   r <- sigma^2/(2*m^2)
@@ -92,7 +89,7 @@ ex6212 <- function(T1 = 1, N = 100,
   
   X0 <- rnorm(1, mu, sigma^2)
   X <- exp(r * times) * X0
-  Z <- (exp(r * times) - 1) / r * X0 + m * V[10 * 1:(N * T1)] #cumsum(X) / N / r + m * V[10 * 1:(N * T1)]
+  Z <- (exp(r * times) - 1) / r * X0 + m * V[10 * 1:(N * T1)]
   H <- c(0, diff(Z)) * N
   X_hat <- exp(-r * times) * (cumsum(2 * r * exp(r * times) * H) / N + mu)
   return(list(
@@ -132,10 +129,10 @@ getPlot <- function(example = "noisy observations of a constant process", showOb
     processes <- ex629(...)
   } else if (example == "noisy observations of a Brownian motion") {
     processes <- ex6210(...)
-  } else if (example == "wrong model") {
-    processes <- exWrongModel(...)
   } else if (example == "noisy observations of population growth") {
     processes <- ex6212(...)
+  } else if (example == "constant model for exponential growth") {
+    processes <- exWrongModel(...)
   }
   
   dt <- data.table(
