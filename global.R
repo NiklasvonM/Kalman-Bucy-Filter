@@ -10,13 +10,13 @@ options(scipen = 99)
 BM <- function (N = 1000, M = 1, x0 = 0, t0 = 0, T1 = 1){
   if (!is.numeric(x0)) 
     stop("'x0' must be numeric")
-  if (any(!is.numeric(t0) || !is.numeric(t))) 
+  if (any(!is.numeric(t0) || !is.numeric(T1))) 
     stop(" 't0' and 'T1' must be numeric")
   if (any(!is.numeric(N) || (N - floor(N) > 0) || N <= 1)) 
     stop(" 'N' must be a positive integer ")
   if (any(!is.numeric(M) || (M - floor(M) > 0) || M <= 0)) 
     stop(" 'M' must be a positive integer ")
-  if (any(t0 < 0 || t1 < 0 || T1 <= t0)) 
+  if (any(t0 < 0 || T1 < 0 || T1 <= t0)) 
     stop(" please use positive times! (0 <= t0 < T1) ")
   Dt <- (T1 - t0) / N
   t <- seq(t0, T1, by = Dt)
@@ -72,8 +72,8 @@ ex6210 <- function(T1 = 1, N = 100,
                    # unused arguments:
                    m = NULL, sigma = NULL, c = NULL
                    ) {
-  U <- BM(N = 10 * N * T1, t0 = 0, T = T1)
-  V <- BM(N = 10 * N * T1, t0 = 0, T = T1)
+  U <- BM(N = 10 * N * T1, t0 = 0, T1 = T1)
+  V <- BM(N = 10 * N * T1, t0 = 0, T1 = T1)
   times <- seq(0, T1, length.out = N * T1)
   
   X <- U[10 * 1:(N * T1)]
@@ -91,7 +91,7 @@ exWrongModel <- function(T1 = 1, N = 100,
                    m = 1, mu = 1, sigma = 1
 ) {
   r <- sigma^2/(2*m^2)
-  V <- BM(N = 10 * N * T1, t0 = 0, T = T1)
+  V <- BM(N = 10 * N * T1, t0 = 0, T1 = T1)
   times <- seq(0, T1, length.out = N * T1)
   
   X0 <- rnorm(1, mu, sigma^2)
@@ -109,7 +109,7 @@ ex6212 <- function(T1 = 1, N = 100,
                    
 ) {
   r <- sigma^2/(2*m^2)
-  V <- BM(N = 10 * N * T1, t0 = 0, T = T1)
+  V <- BM(N = 10 * N * T1, t0 = 0, T1 = T1)
   times <- seq(0, T1, length.out = N * T1)
   
   X0 <- rnorm(1, mu, sigma^2)
