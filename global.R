@@ -2,15 +2,40 @@ library(shiny)
 library(data.table)
 library(ggplot2)
 library(plotly)
-library(Sim.DiffProc)
+#library(Sim.DiffProc)
 
 options(scipen = 99)
+
+
+BM <- function (N = 1000, M = 1, x0 = 0, t0 = 0, T1 = 1){
+  if (!is.numeric(x0)) 
+    stop("'x0' must be numeric")
+  if (any(!is.numeric(t0) || !is.numeric(t))) 
+    stop(" 't0' and 'T1' must be numeric")
+  if (any(!is.numeric(N) || (N - floor(N) > 0) || N <= 1)) 
+    stop(" 'N' must be a positive integer ")
+  if (any(!is.numeric(M) || (M - floor(M) > 0) || M <= 0)) 
+    stop(" 'M' must be a positive integer ")
+  if (any(t0 < 0 || t1 < 0 || T1 <= t0)) 
+    stop(" please use positive times! (0 <= t0 < T1) ")
+  Dt <- (T1 - t0) / N
+  t <- seq(t0, T1, by = Dt)
+  res <- sapply(
+    1:M,
+    function(i)
+      c(0, cumsum(rnorm(N, mean = 0, sd = sqrt(Dt))))
+  )
+  res <- ts(res, start = t0, deltat = Dt)
+  return(res)
+}
+
+
 
 # dX_t = 0
 # dZ_t = X_t dt + m dV_t
 # "noisy observations of constant process"
 ex629 <- function(T1 = 1, sigma = 1, m = 1, N = 100) {
-  V <- BM(N = 10 * N * T1, t0 = 0, T = T1)
+  V <- BM(N = 10 * N * T1, t0 = 0, T1 = T1)
   X0 <- rnorm(n = 1, mean = 0, sd = sigma^2)
   times <- seq(0, T1, length.out = N * T1)
   X <- X0
